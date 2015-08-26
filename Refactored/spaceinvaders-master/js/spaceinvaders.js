@@ -84,6 +84,30 @@ Game.prototype.initialise = function(gameCanvas) {
     };
 };
 
+/*
+ * The Memento Design Pattern with the Memento and the Caretaker. The role of the originator will be taken by Game
+ */
+function Memento(state){
+	this.state = state;
+	this.getSavedState = function(){
+		return this.state;
+	};
+};
+
+function Caretaker(){
+	var saveState = [];
+	this.addMemento = function(memento){
+		saveState.push(memento);
+	};
+	
+	this.getMemento = function(index){
+		return saveState[index];
+	};
+};
+
+caretaker = new Caretaker();
+
+
 Game.prototype.moveToState = function(state) {
  
    //  If we are in a state, leave it.
@@ -139,6 +163,7 @@ Game.prototype.mute = function(mute) {
 
 //  The main loop.
 function GameLoop(game) {
+	console.log()
     var currentState = game.currentState();
     if(currentState) {
 
@@ -245,7 +270,8 @@ WelcomeState.prototype.keyDown = function(game, keyCode) {
         game.level = 1;
         game.score = 0;
         game.lives = 3;
-        game.moveToState(new LevelIntroState(game.level));
+        caretaker.addMemento(new Memento(new LevelIntroState(game.level)));			//saving the Memento with the gamestate to the caretaker
+        game.moveToState((caretaker.getMemento(0)).getSavedState());				//restoring the gamestate from the gametaker.
     }
 };
 
@@ -279,7 +305,7 @@ GameOverState.prototype.keyDown = function(game, keyCode) {
         game.lives = 3;
         game.score = 0;
         game.level = 1;
-        game.moveToState(new LevelIntroState(1));
+        game.moveToState((caretaker.getMemento(0)).getSavedState());
     }
 };
 
@@ -343,7 +369,9 @@ PlayState.prototype.update = function(game, dt) {
     //  the ship. Check this on ticks rather than via a keydown
     //  event for smooth movement, otherwise the ship would move
     //  more like a text editor caret.
-    
+    /*
+     * Use of the Command pattern by adding commads which have the ability to move left/right or shoot.
+     */
 	var goLeft = {
 		execute : function(obj) {
 		obj.ship.x -= obj.shipSpeed * dt;
