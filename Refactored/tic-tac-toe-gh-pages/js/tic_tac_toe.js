@@ -24,7 +24,7 @@ var turn = {
 	}
 };
 
-// Check to see if any of the rows has 3 in a row
+// Check to see if any of the rows has 3 in a row and calls checkCols()
 function checkRows() {
 	for (i = 0; i < board.length; i++) {
 		var same = true;
@@ -39,9 +39,10 @@ function checkRows() {
 			endGame("Player " + winningPlayer + ", you win!");
 		}
 	}
+	checkCols();
 }
 
-// Check to see if any of the columns has 3 in a row
+// Check to see if any of the columns has 3 in a row and calls checkDiag()
 function checkCols() {
 	for (i = 0; i < board.length; i++) {
 		var same = true;
@@ -56,9 +57,10 @@ function checkCols() {
 			endGame("Player " + winningPlayer + ", you win!");
 		}
 	}
+	checkDiag();
 }
 
-// Check to see if any of the diagonals has 3 in a row
+// Check to see if any of the diagonals has 3 in a row and calls checkTie()
 function checkDiag() {
 	var same = true;
 	for (i = 0; i < board.length; i++) {
@@ -82,14 +84,16 @@ function checkDiag() {
 		// Alert winner
 		endGame("Player " + winningPlayer + ", you win!");
 	}
+	else {checkTie();}
 }
 
-// Check to see if it's a tie
+// Check to see if it's a tie and calls changeTurn
 function checkTie() {
 	var flattenedBoard = Array.prototype.concat.apply([], board);
 	for(i = 0; i < flattenedBoard.length; i++){
 		if(flattenedBoard[i] === 0){
 			console.log(i);
+			turn.changeTurn();
 			return;
 		}	
 	}
@@ -99,10 +103,7 @@ function checkTie() {
 // Check to see if either player has won
 function checkWinner() {
 	checkRows();
-	checkCols()
-	checkDiag()
-	checkTie();
-	turn.changeTurn();
+	
 }
 
 // End the game, alert the winner and refresh the page
