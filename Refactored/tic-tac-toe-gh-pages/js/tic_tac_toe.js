@@ -27,51 +27,61 @@ var turn = {
 // Check to see if any of the rows has 3 in a row
 function checkRows() {
 	for (i = 0; i < board.length; i++) {
+		var same = true;
 		for (j = 0; j < board[i].length; j++) {
 			if (board[i][j] === 0 || board[i][j] !== board[i][0]) {
-				return;
+				same = false;
 			}
 		}
-		
+		if (same) {
+			winningPlayer = turn.currentPlayerColor();
+			// Alert winner
+			endGame("Player " + winningPlayer + ", you win!");
+		}
 	}
-	winningPlayer = turn.currentPlayerColor();
-	// Alert winner
-	endGame("Player " + winningPlayer + ", you win!");
 }
 
 // Check to see if any of the columns has 3 in a row
 function checkCols() {
 	for (i = 0; i < board.length; i++) {
+		var same = true;
 		for (j = 0; j < board[i].length; j++) {
 			if (board[j][i] === 0 || board[j][i] !== board[0][i]) {
-				return;
+				same = false;
 			}
 		}
-		
+		if (same) {
+			winningPlayer = turn.currentPlayerColor();
+			// Alert winner
+			endGame("Player " + winningPlayer + ", you win!");
+		}
 	}
-	winningPlayer = turn.currentPlayerColor();
-	// Alert winner
-	endGame("Player " + winningPlayer + ", you win!");
 }
 
 // Check to see if any of the diagonals has 3 in a row
 function checkDiag() {
+	var same = true;
 	for (i = 0; i < board.length; i++) {
 		if (board[i][i] === 0 || board[i][i] !== board[0][0]) {
-			return;
+			same = false;
 		}
 	}
-	winningPlayer = turn.currentPlayerColor();
-	// Alert winner
-	endGame("Player " + winningPlayer + ", you win!");
+	if (same) {
+		winningPlayer = turn.currentPlayerColor();
+		// Alert winner
+		endGame("Player " + winningPlayer + ", you win!");
+	}
+	same = true;
 	for (i = 0; i < board.length; i++) {
 		if (board[i][2 - i] === 0 || board[i][2 - i] !== board[0][2]) {
-			return;
+			same = false;
 		}
 	}
-	winningPlayer = turn.currentPlayerColor();
-	// Alert winner
-	endGame("Player " + winningPlayer + ", you win!");
+	if (same) {
+		winningPlayer = turn.currentPlayerColor();
+		// Alert winner
+		endGame("Player " + winningPlayer + ", you win!");
+	}
 }
 
 // Check to see if it's a tie
