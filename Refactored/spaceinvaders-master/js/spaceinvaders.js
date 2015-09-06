@@ -373,17 +373,29 @@ PlayState.prototype.update = function(game, dt) {
      * Use of the Command pattern by adding commads which have the ability to move left/right or shoot.
      */
 	var goLeft = {
-		execute : function(obj) {
-		obj.ship.x -= obj.shipSpeed * dt;
+		execute : function(obj, speed) {
+		obj.x -= speed * dt;
 		}
 	}
 	
 	var goRight = {
-		execute : function(obj) {
-		obj.ship.x += obj.shipSpeed * dt;
+		execute : function(obj, speed) {
+		obj.x += speed * dt;
 		}
 	}
 	
+    var goUp = {
+        execute : function(obj, speed) {
+        obj.y -= speed * dt;
+        }
+    }
+    
+    var goDown = {
+        execute : function(obj, speed) {
+        obj.y += speed * dt;
+        }
+    }
+
 	var shoot = {
 		execute : function(obj) {
 		obj.fireRocket();
@@ -391,10 +403,10 @@ PlayState.prototype.update = function(game, dt) {
 	}
 	
 	if(game.pressedKeys[37]) {
-        goLeft.execute(this);
+        goLeft.execute(this.ship, this.shipSpeed);
     }
     if(game.pressedKeys[39]) {
-        goRight.execute(this);
+        goRight.execute(this.ship, this.shipSpeed);
     }
     if(game.pressedKeys[32]) {
         shoot.execute(this);
@@ -411,7 +423,7 @@ PlayState.prototype.update = function(game, dt) {
     //  Move each bomb.
     for(var i=0; i<this.bombs.length; i++) {
         var bomb = this.bombs[i];
-        bomb.y += dt * bomb.velocity;
+        goDown.execute(bomb, bomb.velocity);
 
         //  If the rocket has gone off the screen remove it.
         if(bomb.y > this.height) {
@@ -422,7 +434,7 @@ PlayState.prototype.update = function(game, dt) {
     //  Move each rocket.
     for(i=0; i<this.rockets.length; i++) {
         var rocket = this.rockets[i];
-        rocket.y -= dt * rocket.velocity;
+        goUp.execute(rocket, rocket.velocity);
 
         //  If the rocket has gone off the screen remove it.
         if(rocket.y < 0) {
