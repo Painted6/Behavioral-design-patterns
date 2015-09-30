@@ -84,30 +84,6 @@ Game.prototype.initialise = function(gameCanvas) {
     };
 };
 
-/*
- * The Memento Design Pattern with the Memento and the Caretaker. The role of the originator will be taken by Game
- */
-function Memento(state){
-	this.state = state;
-	this.getSavedState = function(){
-		return this.state;
-	};
-};
-
-function Caretaker(){
-	var saveState = [];
-	this.addMemento = function(memento){
-		saveState.push(memento);
-	};
-	
-	this.getMemento = function(index){
-		return saveState[index];
-	};
-};
-
-caretaker = new Caretaker();
-
-
 Game.prototype.moveToState = function(state) {
  
    //  If we are in a state, leave it.
@@ -163,7 +139,6 @@ Game.prototype.mute = function(mute) {
 
 //  The main loop.
 function GameLoop(game) {
-	console.log()
     var currentState = game.currentState();
     if(currentState) {
 
@@ -258,7 +233,7 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline="center"; 
     ctx.textAlign="center"; 
-    ctx.fillText("Space Invaders", game.width / 2, game.height/2-40); 
+    ctx.fillText("Space Invaders", game.width / 2, game.height/2 -40); 
     ctx.font="16px Arial";
 
     ctx.fillText("Press 'Space' to start.", game.width / 2, game.height/2); 
@@ -270,8 +245,7 @@ WelcomeState.prototype.keyDown = function(game, keyCode) {
         game.level = 1;
         game.score = 0;
         game.lives = 3;
-        caretaker.addMemento(new Memento(new LevelIntroState(game.level)));			//saving the Memento with the gamestate to the caretaker
-        game.moveToState((caretaker.getMemento(0)).getSavedState());				//restoring the gamestate from the gametaker.
+        game.moveToState(new LevelIntroState(game.level));
     }
 };
 
@@ -305,7 +279,7 @@ GameOverState.prototype.keyDown = function(game, keyCode) {
         game.lives = 3;
         game.score = 0;
         game.level = 1;
-        game.moveToState((caretaker.getMemento(0)).getSavedState());
+        game.moveToState(new LevelIntroState(1));
     }
 };
 
@@ -369,47 +343,46 @@ PlayState.prototype.update = function(game, dt) {
     //  the ship. Check this on ticks rather than via a keydown
     //  event for smooth movement, otherwise the ship would move
     //  more like a text editor caret.
+
     /*
-     * Use of the Command pattern by adding commads which have the ability to move left/right or shoot.
+     * Use of the Command pattern by adding commands which have the ability to move left/right or shoot.
      */
-	var goLeft = {
-		execute : function(obj, speed) {
-		obj.x -= speed * dt;
-		}
-	}
-	
-	var goRight = {
-		execute : function(obj, speed) {
-		obj.x += speed * dt;
-		}
-	}
-	
-    var goUp = {
-        execute : function(obj, speed) {
-        obj.y -= speed * dt;
-        }
-    }
     
-    var goDown = {
-        execute : function(obj, speed) {
-        obj.y += speed * dt;
+    // Commands as classes
+    function MoveLeftCommand(obj) {
+        this.obj = obj;
+        this.execute = function() {
+            this.obj.ship.x -= this.obj.shipSpeed * dt;
         }
     }
 
-	var shoot = {
-		execute : function(obj) {
-		obj.fireRocket();
-		}
-	}
-	
-	if(game.pressedKeys[37]) {
-        goLeft.execute(this.ship, this.shipSpeed);
+    function MoveRightCommand(obj) {
+        this.obj = obj;
+        this.execute = function() {
+            this.obj.ship.x += this.obj.shipSpeed * dt;
+        }
     }
-    if(game.pressedKeys[39]) {
-        goRight.execute(this.ship, this.shipSpeed);
+
+    function ShootCommand(obj) {
+        this.obj = obj;
+        this.execute = function() {
+            this.obj.fireRocket();
+        }
     }
-    if(game.pressedKeys[32]) {
-        shoot.execute(this);
+
+    // Command objects ("key binding")
+    var leftKeyCommand = new MoveLeftCommand(this);
+    var rightKeyCommand = new MoveRightCommand(this);
+    var spaceKeyCommand = new ShootCommand(this);
+
+    if(game.pressedKeys[37]) {  // left key
+        leftKeyCommand.execute();
+    }
+    if(game.pressedKeys[39]) {  // right key
+        rightKeyCommand.execute();
+    }
+    if(game.pressedKeys[32]) {  // space key
+        spaceKeyCommand.execute();
     }
 
     //  Keep the ship in bounds.
@@ -423,7 +396,7 @@ PlayState.prototype.update = function(game, dt) {
     //  Move each bomb.
     for(var i=0; i<this.bombs.length; i++) {
         var bomb = this.bombs[i];
-        goDown.execute(bomb, bomb.velocity);
+        bomb.y += dt * bomb.velocity;
 
         //  If the rocket has gone off the screen remove it.
         if(bomb.y > this.height) {
@@ -434,7 +407,7 @@ PlayState.prototype.update = function(game, dt) {
     //  Move each rocket.
     for(i=0; i<this.rockets.length; i++) {
         var rocket = this.rockets[i];
-        goUp.execute(rocket, rocket.velocity);
+        rocket.y -= dt * rocket.velocity;
 
         //  If the rocket has gone off the screen remove it.
         if(rocket.y < 0) {
