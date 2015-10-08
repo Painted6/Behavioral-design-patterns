@@ -38,13 +38,12 @@
 \begin{document}
 \firstpage{1}
 
-\title[short Title]{Bahavioral Design Patterns}
+\title[Behavioral Design Patterns]{Behavioral Design Patterns}
 \author[Malte Brockmann, Jun-Heui Cho]{Malte Brockmann, Jun-Heui Cho}
 \address{Department of Bioinformatics, Technische Universit\"at M\"unchen}
-
 \history{}
 
-\editor{}
+\editor{Supervised by: Guy Yachdav}
 
 \maketitle
 
@@ -53,7 +52,7 @@ This report introduces the behavioral design patterns in general and describes t
 \end{abstract}
 
 \section{Introduction}
-Behavioral patterns are a subcategory of Design Pattern which are popular in software development. They are mainly implemented in object oriented programming languages. This might speak against the use of those pattern in JavaScript, caused by it's structure for example the use of prototyping as it's  inheritance structures. This report will show that it is possible to implement design or in particular behavioral patterns in JavaScript with some adjustments. Some behavioral patterns will be explained and applied to existing projects from "GitHub.com" \cite{github}.
+Behavioral patterns are a subcategory of Design Pattern which are popular in software development. They are mainly implemented in object oriented programming languages. This might speak against the use of those pattern in JavaScript, caused by it's structure for example the use of prototyping as it's  inheritance structures. This report will show that it is possible to implement design or in particular behavioral patterns in JavaScript with some adjustments. Two behavioral patterns will be explained and applied to existing projects from "GitHub.com" \cite{github}.
 
 The research  based on three main sources: The web page "dofactory.com" \cite{dofac} which provided explanations and JavaScript examples for all patterns. The web page "sourcemaking.com" \cite{sourcem} which contained further information  and abstract examples, but no implementation examples in JavaScript. The third main source is the book "Elements of Reusable Object-Oriented Software" by the authors which are called the "Gang of Four". \cite{gang4} This book provides basic information about design patterns. 
 
@@ -65,7 +64,9 @@ Inheritance play a significant role in the context of behavioral pattern which a
 Despite this it is still possible to use behavioral patterns in JavaScript if the patterns are adjusted in certain ways.
 
 \section{Memento Pattern}
-"Without violating encapsulation, capture and externalize an object's internal state so that the object can be returned to this state later." \cite{sourcem} Simply put saving an object's (or a portion of it's) state, which can be restored later. This pattern is also used to provide a undo or a rollback functionality to a application. When applying the Memento pattern, it  is important to secure the rules of encapsulation, otherwise it is possible that the application's reliability and extensibility is compromised. \cite{gang4} 
+"Without violating encapsulation, capture and externalize an object's internal state so that the object can be returned to this state later." \cite{sourcem} Simply put the Memento pattern saves an object's (or a portion of it's) state, which can be restored later. This pattern is also used to provide a undo or a rollback functionality to a application. When applying the Memento pattern, it  is important to secure the rules of encapsulation, otherwise it is possible that the application's reliability and extensibility is compromised. \cite{gang4} 
+
+\subsection{Participants}
 %figures
 \begin{figure}[ht]
     \centering
@@ -73,10 +74,10 @@ Despite this it is still possible to use behavioral patterns in JavaScript if th
     \caption{UML diagram of the Memento pattern \cite{mementoUML}}
     \label{fig:Memento_pattern}
 \end{figure}
-\subsection{Participants}
-To implement this pattern three participants are necessary. First we need the Originator which is the class whose state should be stored. It should include methods to create a memento of the Originator's current state. Furthermore it should have the ability to set the state to a memento which was stored earlier.
-Second we need the Memento class itself which contains the information of the state of the Originator. The Memento has no influence on content or the amount which is being stored, this is completely controlled by the Originator. But the Memento can protect the stored states by providing no interface to modify the data. The only mandatory functionality is the ability to return the saved state.
+To implement this pattern three participants are necessary. First we need the Originator whose state should be stored. It should include methods to create a Memento of the Originator's current state. Furthermore it should have the ability to set the state to a Memento which was stored earlier.
+Second we need the Memento itself which contains the information of the state of the Originator. The Memento has no influence on content or the amount which is being stored, this is completely controlled by the Originator. But the Memento can protect the stored states by providing no interface to modify the data. The only mandatory functionality is the ability to return the saved state.
 The last participant is the caretaker whose sole function is to store Mementos.The caretaker can hold one or many Mementos, depending on the implementation, so multi-level undo and redo actions are possible. \cite{gang4}
+
 \subsection{Collaboration}
 As the diagram in figure~\ref{fig:Memento_pattern_sequence} shows, the Caretaker request a Memento from the Originator and holds it until passing it back to the Originator.
 %figures
