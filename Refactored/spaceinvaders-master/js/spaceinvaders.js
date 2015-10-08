@@ -65,6 +65,30 @@ function Game() {
     this.sounds = null;
 }
 
+/*
+ * The Memento Design Pattern with the Memento and the Caretaker. The role of the originator will be taken by Game
+ */
+function Memento(state){
+	this.state = state;
+	this.getSavedState = function(){
+		return this.state;
+	};
+};
+
+function Caretaker(){
+	var saveState = [];
+	this.addMemento = function(memento){
+		saveState.push(memento);
+	};
+	
+	this.getMemento = function(index){
+		return saveState[index];
+	};
+};
+
+caretaker = new Caretaker();
+
+
 //  Initialis the Game with a canvas.
 Game.prototype.initialise = function(gameCanvas) {
 
@@ -245,7 +269,8 @@ WelcomeState.prototype.keyDown = function(game, keyCode) {
         game.level = 1;
         game.score = 0;
         game.lives = 3;
-        game.moveToState(new LevelIntroState(game.level));
+        caretaker.addMemento(new Memento(new LevelIntroState(game.level)));			//saving the Memento with the gamestate to the caretaker
+        game.moveToState((caretaker.getMemento(0)).getSavedState());				//restoring the gamestate from the gametaker.
     }
 };
 
@@ -279,7 +304,7 @@ GameOverState.prototype.keyDown = function(game, keyCode) {
         game.lives = 3;
         game.score = 0;
         game.level = 1;
-        game.moveToState(new LevelIntroState(1));
+        game.moveToState((caretaker.getMemento(0)).getSavedState());
     }
 };
 
